@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edge – AI Fantasy Football Coach</title>
+  <meta name="description" content="Validate Edge: an AI fantasy football coach that knows your league, saves you time, and helps you win smarter. Join the waitlist and vote on features." />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Edge – AI Fantasy Football Coach" />
+  <meta property="og:description" content="Personalized lineup, trade, and waiver advice for your unique league. Save time. Win more." />
+  <meta property="og:image" content="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'><rect width='100%' height='100%' fill='%23111'/><text x='50%' y='53%' fill='white' font-size='72' text-anchor='middle' font-family='Arial'>EDGE</text></svg>" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- JSON-LD (Organization + Product) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Edge",
+    "url": "https://example.com",
+    "logo": "https://example.com/icon.png",
+    "sameAs": []
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "Edge – AI Fantasy Football Coach",
+    "description": "Personalized lineup, trade, and waiver recommendations with league-specific scoring.",
+    "brand": {"@type":"Brand", "name":"Edge"}
+  }
+  </script>
+
+  <!-- Favicon/App Icons (placeholder SVG data URIs) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23090'%3E%3C/rect%3E%3Ctext x='50%25' y='52%25' text-anchor='middle' font-size='28' fill='white' font-family='Arial'%3EE%3C/text%3E%3C/svg%3E" />
+  <!-- You can replace the data-URI favicon above with your own file later. -->
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0b0d10;
+      --surface:#13161a;
+      --muted:#7f8da3;
+      --text:#e8eef7;
+      --accent:#2ecc71;
+      --accent-700:#1ea85a;
+      --danger:#ff5d5d;
+      --warning:#ffb703;
+      --focus: 2px solid #2ecc71;
+      --radius:14px;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    html{scroll-behavior:smooth}
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:radial-gradient(1200px 600px at 70% -10%,rgba(46,204,113,.12),transparent), var(--bg);
+    }
+    a{color:inherit}
+    img{max-width:100%; height:auto;}
+
+    /* Layout */
+    header{
+      position:sticky; top:0; z-index:40; backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(11,13,16,.9), rgba(11,13,16,.75));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:0 16px}
+    .row{display:flex; gap:16px; align-items:center}
+
+    .brand{display:flex; align-items:center; gap:10px; padding:12px 0}
+    .logo{
+      width:34px;height:34px; border-radius:10px; display:grid; place-items:center; color:#fff; font-weight:800; background:linear-gradient(135deg,#2ecc71,#1ea85a);
+      box-shadow: 0 8px 20px rgba(46,204,113,.35);
+    }
+    nav{margin-left:auto; display:flex; gap:18px}
+    nav a{display:inline-block; padding:10px 8px; color:var(--muted); text-decoration:none; font-weight:600}
+    nav a:focus{outline:var(--focus); border-radius:8px}
+
+    .cta{appearance:none; border:0; background:var(--accent); color:#0a0a0a; font-weight:800; padding:12px 16px; border-radius:12px; box-shadow:0 8px 20px rgba(46,204,113,.35); cursor:pointer}
+    .cta:hover{background:var(--accent-700)}
+    .cta:focus{outline:var(--focus)}
+    .cta.secondary{background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.12)}
+
+    /* Hero */
+    .hero{padding:56px 0 24px}
+    .hero h1{font-size: clamp(28px, 5vw, 48px); line-height:1.05; margin:10px 0}
+    .sub{color:var(--muted); font-size: clamp(15px, 2.6vw, 18px)}
+    .bullets{display:grid; grid-template-columns:1fr; gap:8px; margin:16px 0 8px}
+    .bullet{display:flex; gap:10px; align-items:flex-start; color:#cfe9db}
+    .check{width:18px; height:18px; background:var(--accent); border-radius:50%; display:inline-grid; place-items:center; font-size:14px; color:#0a0a0a; margin-top:3px}
+
+    .hero-cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+
+    /* Social proof */
+    .badges{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:12px 0 0}
+    .badge{background:var(--surface); border:1px solid rgba(255,255,255,.06); border-radius:12px; padding:12px; text-align:center; color:var(--muted)}
+
+    /* Sections */
+    section{padding:48px 0}
+    h2{font-size: clamp(22px, 3.6vw, 32px); margin:0 0 12px}
+    p{line-height:1.6}
+
+    .card-grid{display:grid; grid-template-columns:1fr; gap:12px}
+    .card{background:var(--surface); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow)}
+    .card h3{margin-top:0; font-size:18px}
+
+    @media(min-width:768px){
+      .bullets{grid-template-columns:repeat(2,1fr)}
+      .badges{grid-template-columns:repeat(6,1fr)}
+      .card-grid{grid-template-columns:repeat(3,1fr)}
+    }
+
+    /* How it works */
+    .steps{display:grid; grid-template-columns:1fr; gap:14px}
+    .step{background:linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border:1px dashed rgba(255,255,255,.12); border-radius:var(--radius); padding:14px}
+
+    @media(min-width:768px){
+      .steps{grid-template-columns:repeat(3,1fr)}
+    }
+
+    /* Demo */
+    .carousel{display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px}
+    .shot{flex: 0 0 86%; scroll-snap-align:start; background:#0f1317; border:1px solid rgba(255,255,255,.08); border-radius:12px; padding:10px}
+    @media(min-width:768px){ .shot{flex:0 0 32%} }
+
+    .video-thumb{position:relative; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,.08)}
+    .play{position:absolute; inset:auto 12px 12px auto; background:rgba(0,0,0,.6); border:1px solid rgba(255,255,255,.3); padding:8px 12px; border-radius:10px; font-weight:700}
+
+    /* Pricing */
+    .pricing{display:grid; grid-template-columns:1fr; gap:12px}
+    @media(min-width:768px){ .pricing{grid-template-columns:repeat(2,1fr)} }
+
+    /* Forms */
+    form label{display:block; font-weight:600; margin:8px 0 4px}
+    input, select{width:100%; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,.14); background:#0f1216; color:var(--text)}
+    input:focus, select:focus{outline:var(--focus)}
+    .consent{display:flex; gap:10px; align-items:flex-start; margin:10px 0}
+    .consent input{width:auto}
+
+    /* FAQ */
+    details{border:1px solid rgba(255,255,255,.12); border-radius:12px; padding:12px; background:#0f1216}
+    summary{cursor:pointer; font-weight:700}
+
+    /* Footer */
+    footer{border-top:1px solid rgba(255,255,255,.08); color:var(--muted); padding:24px 0}
+
+    /* Admin */
+    .admin-toggle{position:fixed; bottom:18px; right:18px; z-index:60}
+    .panel{position:fixed; inset:auto 16px 76px 16px; background:#0e1116; border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:16px; box-shadow:var(--shadow); display:none; max-height:60vh; overflow:auto}
+    .panel.open{display:block}
+    .mini{font-size:13px; color:var(--muted)}
+
+    /* Modal */
+    .modal{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; place-items:center; z-index:80}
+    .modal.open{display:grid}
+    .modal-inner{background:#0f1216; border-radius:14px; padding:10px; width:min(900px, 92vw); border:1px solid rgba(255,255,255,.12)}
+
+    /* Accessibility helpers */
+    .sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0}
+    .focus-ring:focus{outline:var(--focus); border-radius:10px}
+  </style>
+</head>
+<body>
+  <a class="sr-only" href="#main">Skip to content</a>
+  <header role="banner">
+    <div class="wrap row" aria-label="Top navigation">
+      <div class="brand" aria-label="Home">
+        <div class="logo" aria-hidden="true">E</div>
+        <strong>Edge</strong>
+      </div>
+      <nav aria-label="Primary">
+        <a class="focus-ring" href="#how">How It Works</a>
+        <a class="focus-ring" href="#features">Features</a>
+        <a class="focus-ring" href="#pricing">Pricing</a>
+        <a class="focus-ring" href="#faq">FAQ</a>
+      </nav>
+      <button class="cta" id="header-cta">Join Waitlist</button>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="hero" aria-labelledby="hero-title">
+      <div class="wrap">
+        <p class="mini" id="variant-pill" aria-live="polite">Variant: A</p>
+        <h1 id="hero-title">Save Time & Win More</h1>
+        <p class="sub" id="hero-sub">Edge is an AI coach that knows your league and handles the heavy lifting—so you can focus on the fun.</p>
+
+        <div id="variant-bullets" class="bullets" aria-label="Key benefits">
+          <!-- Inserted by JS -->
+        </div>
+
+        <div class="hero-cta">
+          <button class="cta" id="hero-cta">Join the Waitlist</button>
+          <button class="cta secondary" id="open-demo" aria-haspopup="dialog" aria-controls="demo-modal">See a 30‑sec Demo</button>
+        </div>
+
+        <!-- Social proof badges (placeholders) -->
+        <div class="badges" aria-label="Social proof">
+          <div class="badge" aria-hidden="true">As seen in • TBD</div>
+          <div class="badge" aria-hidden="true">Trusted by early testers</div>
+          <div class="badge" aria-hidden="true">Privacy‑first</div>
+          <div class="badge" aria-hidden="true">ESPN • Yahoo • Sleeper*</div>
+          <div class="badge" aria-hidden="true">Zero spam promise</div>
+          <div class="badge" aria-hidden="true">Launch: 2026 (TBD)</div>
+        </div>
+
+        <p class="mini" style="margin-top:12px">We only collect your email on this page—no league credentials.</p>
+      </div>
+    </section>
+
+    <!-- How it Works -->
+    <section id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <h2 id="how-title">How it works</h2>
+        <div class="steps" role="list">
+          <div class="step" role="listitem"><strong>1) Connect your league</strong><br><span class="mini">Bring in scoring, roster, and matchup context.</span></div>
+          <div class="step" role="listitem"><strong>2) Get weekly picks</strong><br><span class="mini">Lineups, trades, and waivers tailored to you.</span></div>
+          <div class="step" role="listitem"><strong>3) Win smarter</strong><br><span class="mini">Spend less time. Feel confident. Beat your rivals.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" aria-labelledby="features-title">
+      <div class="wrap">
+        <h2 id="features-title">Features built for your league</h2>
+        <div class="card-grid">
+          <article class="card"><h3>Lineup advice</h3><p>Start/sit guidance that adapts to your scoring and roster rules.</p></article>
+          <article class="card"><h3>Trade suggestions</h3><p>Identify fair, winnable trades based on team needs and schedules.</p></article>
+          <article class="card"><h3>Waiver targets</h3><p>Weekly pickups prioritized for your roster and opponent matchups.</p></article>
+          <article class="card"><h3>Injury alerts</h3><p>Get notified when status changes impact your lineup.</p></article>
+          <article class="card"><h3>League‑specific scoring</h3><p>Custom logic for PPR, bonuses, superflex, IDP, and more.</p></article>
+          <article class="card"><h3>Privacy & security</h3><p>No spam. We’ll never sell your data. Email only on this page.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mini demo: carousel + video modal -->
+    <section aria-labelledby="demo-title">
+      <div class="wrap">
+        <h2 id="demo-title">See Edge in action</h2>
+        <div class="carousel" aria-label="Mock screenshots">
+          <figure class="shot"><img alt="Mock: personalized lineup screen" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='%2313161a'/><text x='50%25' y='52%25' fill='%23cfe9db' font-size='28' text-anchor='middle' font-family='Arial'>Screenshot 1 – Lineup Advice</text></svg>"></figure>
+          <figure class="shot"><img alt="Mock: trade suggestions screen" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='%2313161a'/><text x='50%25' y='52%25' fill='%23cfe9db' font-size='28' text-anchor='middle' font-family='Arial'>Screenshot 2 – Trades</text></svg>"></figure>
+          <figure class="shot"><img alt="Mock: waiver targets screen" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 450'><rect width='800' height='450' fill='%2313161a'/><text x='50%25' y='52%25' fill='%23cfe9db' font-size='28' text-anchor='middle' font-family='Arial'>Screenshot 3 – Waivers</text></svg>"></figure>
+        </div>
+
+        <div class="video-thumb" aria-label="30 second demo">
+          <img alt="Demo video thumbnail" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 675'><rect width='1200' height='675' fill='%2313161a'/><text x='50%25' y='52%25' fill='%23cfe9db' font-size='36' text-anchor='middle' font-family='Arial'>Demo Video Placeholder</text></svg>">
+          <button class="play focus-ring" id="open-demo-2" aria-haspopup="dialog" aria-controls="demo-modal">Play demo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing teaser -->
+    <section id="pricing" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <h2 id="pricing-title">Simple pricing</h2>
+        <div class="pricing">
+          <div class="card"><h3>Free Trial</h3><p>Try Edge on your league (feature‑limited) to feel the difference.</p></div>
+          <div class="card"><h3>Pro (coming soon)</h3><p>Full access to lineup, trades, waivers, and alerts. Transparent pricing, cancel anytime.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Validation widgets -->
+    <section aria-labelledby="validate-title">
+      <div class="wrap">
+        <h2 id="validate-title">Gut‑check our direction</h2>
+        <div class="card-grid">
+          <form id="poll" class="card" aria-labelledby="poll-q">
+            <h3 id="poll-q">Would you trust an AI to manage parts of your fantasy team?</h3>
+            <label for="poll-answer" class="sr-only">Choose an option</label>
+            <select id="poll-answer" name="answer" required>
+              <option value="" disabled selected>Select…</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Maybe</option>
+            </select>
+            <button class="cta" type="submit">Vote</button>
+            <p class="mini" id="poll-result" aria-live="polite"></p>
+          </form>
+
+          <form id="pay" class="card" aria-labelledby="pay-q">
+            <h3 id="pay-q">Would you pay for this?</h3>
+            <label for="pay-level" class="sr-only">Select intent</label>
+            <select id="pay-level" required>
+              <option value="" disabled selected>Select…</option>
+              <option>No</option>
+              <option>Maybe</option>
+              <option>Yes</option>
+            </select>
+            <button class="cta" type="submit">Submit</button>
+            <p class="mini" id="pay-result" aria-live="polite"></p>
+          </form>
+
+          <!-- Waitlist form -->
+          <form id="waitlist" class="card" aria-labelledby="waitlist-title">
+            <h3 id="waitlist-title">Join the waitlist</h3>
+            <label for="name">Name (optional)</label>
+            <input id="name" name="name" type="text" autocomplete="name" placeholder="Taylor" />
+            <label for="email">Email <span class="sr-only">(required)</span></label>
+            <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com" />
+            <div class="consent">
+              <input id="consent" type="checkbox" required aria-describedby="consent-note" />
+              <label for="consent">I agree to receive product updates and understand my data won’t be shared.</label>
+            </div>
+            <button class="cta" type="submit">Get early access</button>
+            <p class="mini" id="thankyou" aria-live="polite" style="display:none">Thanks! You’re on the list. We’ll be in touch.</p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="wrap">
+        <h2 id="faq-title">FAQs</h2>
+        <div class="card-grid">
+          <details class="card"><summary>Do you store league credentials?</summary><p>No. On this page we only collect your email for updates. If you later connect a league, we’ll explain exactly what’s used and why.</p></details>
+          <details class="card"><summary>Which platforms will you support?</summary><p>ESPN, Yahoo, and Sleeper to start, with others based on demand.</p></details>
+          <details class="card"><summary>How accurate is Edge?</summary><p>We combine real‑time data, matchup context, and your league’s rules. Expect transparent confidence ranges, not magic.</p></details>
+          <details class="card"><summary>Will this work for non‑standard leagues?</summary><p>Yes—PPR, bonuses, superflex, IDP, and custom scoring are in scope.</p></details>
+          <details class="card"><summary>What will it cost?</summary><p>We’re still finalizing pricing. There will be a free trial and a straightforward monthly plan. No surprises.</p></details>
+          <details class="card"><summary>Other sports?</summary><p>Football first. Basketball and baseball are on the roadmap if demand is strong.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer role="contentinfo">
+    <div class="wrap row" style="justify-content:space-between; gap:12px">
+      <span>© <span id="year"></span> Edge</span>
+      <span class="mini">Privacy • Terms • <a href="mailto:hello@example.com">hello@example.com</a></span>
+    </div>
+  </footer>
+
+  <!-- Admin Button & Panel -->
+  <button class="cta admin-toggle" id="admin-btn" aria-expanded="false" aria-controls="admin-panel">Admin</button>
+  <aside id="admin-panel" class="panel" role="dialog" aria-modal="false" aria-labelledby="admin-title">
+    <h3 id="admin-title">Validation Metrics</h3>
+    <p class="mini">Targets: 15%+ signup conversion • 30%+ “would pay” intent</p>
+    <div class="card-grid">
+      <div class="card"><h3>Counters</h3><pre id="counters" aria-live="polite"></pre></div>
+      <div class="card"><h3>Poll results</h3><pre id="poll-stats"></pre></div>
+      <div class="card"><h3>Would‑pay distribution</h3><pre id="pay-stats"></pre></div>
+      <div class="card"><h3>Variant & UTM</h3><pre id="visit-meta"></pre></div>
+      <div class="card"><h3>Events</h3><button class="cta" id="export">Export JSON</button></div>
+    </div>
+  </aside>
+
+  <!-- Demo Modal -->
+  <div class="modal" id="demo-modal" role="dialog" aria-modal="true" aria-labelledby="demo-heading">
+    <div class="modal-inner">
+      <div class="row" style="justify-content:space-between; align-items:center">
+        <h3 id="demo-heading" style="margin:6px 0">30‑second Demo</h3>
+        <button class="cta secondary" id="close-demo">Close</button>
+      </div>
+      <!-- Placeholder inline video -->
+      <video id="demo-video" style="width:100%; border-radius:10px" controls autoplay muted playsinline>
+        <!-- Replace the sources below with real files when available -->
+        <source src="demo.mp4" type="video/mp4">
+        <source src="demo.webm" type="video/webm">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    const $ = (s, d=document)=>d.querySelector(s);
+    const $$ = (s, d=document)=>Array.from(d.querySelectorAll(s));
+
+    const params = new URLSearchParams(location.search);
+    const variant = (params.get('v')||'A').toUpperCase();
+
+    const VARIANTS = {
+      A: {
+        pill: 'A – Convenience',
+        h1: 'Save Time & Win More',
+        sub: 'Let Edge handle the research. You make the moves.',
+        cta: 'Join the Waitlist',
+        bullets: [
+          'Skip hours of podcasts and research',
+          'Weekly picks you can act on fast',
+          'Alerts that actually matter'
+        ]
+      },
+      B: {
+        pill: 'B – Personalization',
+        h1: 'AI That Knows Your League',
+        sub: 'Your rules. Your roster. Your matchups. Advice that fits.',
+        cta: 'Get Personalized Picks',
+        bullets: [
+          'Scoring‑aware lineup advice',
+          'Trade ideas matched to team needs',
+          'Waivers prioritized for you'
+        ]
+      },
+      C: {
+        pill: 'C – Performance',
+        h1: 'Smarter Lineups, Real Results',
+        sub: 'Turn insights into wins with data‑driven picks.',
+        cta: 'Start Winning Smarter',
+        bullets: [
+          'Opponent‑aware recommendations',
+          'Strength of schedule baked in',
+          'Transparent confidence ranges'
+        ]
+      }
+    };
+
+    // Basic in‑page analytics (localStorage)
+    const STORAGE_KEY = 'edge_validation_events_v1';
+    const events = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+
+    function track(type, payload={}){
+      const evt = {type, ts: Date.now(), variant: activeV, utm: UTM, ...payload};
+      events.push(evt);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+      renderAdmin();
+    }
+
+    // UTM capture
+    const UTM = {
+      source: params.get('utm_source')||null,
+      medium: params.get('utm_medium')||null,
+      campaign: params.get('utm_campaign')||null
+    };
+
+    // Validate variant
+    const activeV = ['A','B','C'].includes(variant) ? variant : 'A';
+    const v = VARIANTS[activeV];
+
+    // Apply variant text
+    $('#variant-pill').textContent = `Variant: ${v.pill}`;
+    $('#hero-title').textContent = v.h1;
+    $('#hero-sub').textContent = v.sub;
+    $('#hero-cta').textContent = v.cta;
+
+    const bulletsWrap = $('#variant-bullets');
+    bulletsWrap.innerHTML = '';
+    v.bullets.forEach(b=>{
+      const li = document.createElement('div');
+      li.className='bullet';
+      li.innerHTML = `<span class="check" aria-hidden="true">✓</span><span>${b}</span>`;
+      bulletsWrap.appendChild(li);
+    });
+
+    // Year in footer
+    $('#year').textContent = new Date().getFullYear();
+
+    // Track page view
+    track('page_view');
+    track('variant_impression');
+
+    // CTA clicks
+    $('#header-cta').addEventListener('click',()=>{ track('cta_click',{pos:'header'}); $('#waitlist').scrollIntoView({behavior:'smooth'}); });
+    $('#hero-cta').addEventListener('click',()=>{ track('cta_click',{pos:'hero'}); $('#waitlist').scrollIntoView({behavior:'smooth'}); });
+
+    // Demo modal controls
+    const modal = $('#demo-modal');
+    const video = $('#demo-video');
+    function openDemo(){ modal.classList.add('open'); video && video.play && video.play().catch(()=>{}); track('open_demo'); }
+    function closeDemo(){ modal.classList.remove('open'); video && video.pause && video.pause(); }
+    $('#open-demo').addEventListener('click', openDemo);
+    $('#open-demo-2').addEventListener('click', openDemo);
+    $('#close-demo').addEventListener('click', closeDemo);
+    modal.addEventListener('click', e=>{ if(e.target===modal) closeDemo(); });
+
+    // Poll form
+    $('#poll').addEventListener('submit', e=>{
+      e.preventDefault();
+      const val = $('#poll-answer').value;
+      if(!val) return;
+      track('poll_vote', {answer: val});
+      $('#poll-result').textContent = `Thanks for voting: ${val}`;
+      e.target.reset();
+    });
+
+    // Pay intent form
+    $('#pay').addEventListener('submit', e=>{
+      e.preventDefault();
+      const val = $('#pay-level').value;
+      if(!val) return;
+      track('would_pay', {intent: val});
+      $('#pay-result').textContent = `Logged: ${val}`;
+      e.target.reset();
+    });
+
+    // Waitlist form
+    $('#waitlist').addEventListener('submit', e=>{
+      e.preventDefault();
+      const name = $('#name').value.trim() || null;
+      const email = $('#email').value.trim();
+      const consent = $('#consent').checked;
+      if(!email || !consent){ return; }
+
+      // Placeholder: webhook hook point
+      // fetch('https://your-webhook-here', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({name,email,variant:activeV,utm:UTM})});
+
+      track('signup', {email_mask: mask(email), name});
+      $('#thankyou').style.display='block';
+      e.target.reset();
+    });
+
+    function mask(email){
+      const [u,d] = email.split('@');
+      const mu = u.length<=2 ? u[0]+'*' : u[0]+'*'.repeat(u.length-2)+u.slice(-1);
+      return `${mu}@${d}`;
+    }
+
+    // Admin panel
+    const adminBtn = $('#admin-btn');
+    const panel = $('#admin-panel');
+    adminBtn.addEventListener('click', ()=>{
+      const open = panel.classList.toggle('open');
+      adminBtn.setAttribute('aria-expanded', open?'true':'false');
+      renderAdmin();
+    });
+
+    // Keyboard shortcut: type E D G E
+    const seq = ['e','d','g','e'];
+    let index = 0;
+    window.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase() === seq[index]){
+        index++;
+        if(index===seq.length){ panel.classList.add('open'); adminBtn.setAttribute('aria-expanded','true'); renderAdmin(); index=0; }
+      } else { index = 0; }
+    });
+
+    // Render admin metrics
+    function renderAdmin(){
+      const evts = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+      const counts = countBy(evts.map(e=>e.type));
+      $('#counters').textContent = JSON.stringify({
+        page_views: counts.page_view||0,
+        cta_clicks: counts.cta_click||0,
+        signups: counts.signup||0,
+        poll_votes: counts.poll_vote||0,
+        would_pay_events: counts.would_pay||0
+      }, null, 2);
+
+      const poll = evts.filter(e=>e.type==='poll_vote').map(e=>e.answer);
+      $('#poll-stats').textContent = JSON.stringify(percentages(poll), null, 2);
+
+      const pay = evts.filter(e=>e.type==='would_pay').map(e=>e.intent);
+      $('#pay-stats').textContent = JSON.stringify(percentages(pay), null, 2);
+
+      const firstVisit = evts.find(e=>e.type==='page_view');
+      const metas = {
+        variant: activeV,
+        utm: UTM,
+        first_visit: firstVisit ? new Date(firstVisit.ts).toISOString() : null
+      };
+      $('#visit-meta').textContent = JSON.stringify(metas, null, 2);
+    }
+
+    function countBy(arr){
+      return arr.reduce((a,k)=>{a[k]=(a[k]||0)+1; return a;},{})
+    }
+
+    function percentages(arr){
+      const total = arr.length || 0;
+      const c = countBy(arr);
+      const keys = ['Yes','No','Maybe'];
+      const pct = {};
+      keys.forEach(k=>{ pct[k] = total ? Math.round((100*c[k]||0)/total) + '%' : '0%'; });
+      return {total, counts:c, pct};
+    }
+
+    // Export JSON
+    $('#export').addEventListener('click', ()=>{
+      const blob = new Blob([localStorage.getItem(STORAGE_KEY)||'[]'], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const ts = new Date().toISOString().replace(/[:.]/g,'-');
+      a.href = url; a.download = `edge-validation-events-${ts}.json`;
+      document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+      track('export_events');
+    });
+  })();
+  </script>
+</body>
+</html>
